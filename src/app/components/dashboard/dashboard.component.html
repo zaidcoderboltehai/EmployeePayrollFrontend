@@ -1,0 +1,87 @@
+<!-- Header Section -->
+<header class="header">
+    <div class="logo" routerLink="/dashboard" style="cursor: pointer;">
+        <img [src]="logoPath" alt="Employee Payroll Logo" class="header-logo">
+        <div class="logo-text">
+            <span class="emp-text">EMPLOYEE</span><br>
+            <span class="payroll-text">PAYROLL</span>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="details-container">
+        <div class="details-header">
+            <h2 class="details-title">Employee Details</h2>
+            <div class="details-actions">
+                <div class="search-container">
+                    <div *ngIf="!isSearchExpanded" class="search-box" (click)="toggleSearch()">
+                        <span class="material-icons">search</span>
+                    </div>
+                    <div *ngIf="isSearchExpanded" class="search-expanded">
+                        <input type="text" 
+                            [(ngModel)]="searchQuery" 
+                            (input)="searchEmployees($event)"
+                            placeholder="Search employees..."
+                            class="search-input">
+                        <span class="material-icons close-icon" (click)="toggleSearch()">close</span>
+                    </div>
+                </div>
+                <button class="add-user-button" (click)="addEmployee()">
+                    <span class="material-icons">add</span> Add User
+                </button>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table class="employee-table">
+                <thead>
+                    <tr>
+                        <th>NAME</th>
+                        <th>GENDER</th>
+                        <th>DEPARTMENT</th>
+                        <th>SALARY</th>
+                        <th>START DATE</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dynamic Rows -->
+                    <tr *ngFor="let emp of filteredEmployees">
+                        <td class="name-cell">
+                            <img [src]="emp.imagePath" alt="Profile" class="table-profile-img">
+                            <span>{{ emp.name }}</span>
+                        </td>
+                        <td>{{ emp.gender }}</td>
+                        <td>
+                            <div class="department-tags">
+                                <span *ngFor="let dept of emp.department.split(', ')" 
+                                    class="tag {{ dept.toLowerCase() }}-tag">
+                                    {{ dept.trim() }}
+                                </span>
+                            </div>
+                        </td>
+                        <td>₹ {{ emp.salary | number }}</td>
+                        <td>{{ emp.startDate | date: 'dd MMM yyyy' }}</td>
+                        <td class="actions-cell">
+                            <span class="material-icons action-icon delete-icon" 
+                                (click)="navigateToDelete(emp.id)">delete</span>
+                            <span class="material-icons action-icon edit-icon" 
+                                (click)="editEmployee(emp.id)">edit</span>
+                        </td>
+                    </tr>
+                    
+                    <!-- Empty State -->
+                    <tr *ngIf="filteredEmployees.length === 0">
+                        <td colspan="6" class="no-results">
+                            {{ searchQuery ? 
+                            'No employees found matching your search' : 
+                            'No employees available' }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

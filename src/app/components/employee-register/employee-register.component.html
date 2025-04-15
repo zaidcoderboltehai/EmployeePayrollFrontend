@@ -1,0 +1,142 @@
+<div class="dashboard-container">
+  <header class="header">
+    <div class="logo-container" routerLink="/dashboard" style="cursor: pointer;">
+      <img [src]="logoPath" alt="Employee Payroll Logo" class="header-logo">
+    </div>
+    <div class="title-container">
+      <h2>EMPLOYEE</h2>
+      <h2 class="second-h2">PAYROLL</h2>
+    </div>
+  </header>
+
+  <div class="form-container">
+    <h3>Employee Payroll Form</h3>
+    <form (ngSubmit)="onSubmit()" #employeeForm="ngForm">
+      <!-- Name Input -->
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input id="name" type="text" 
+               [(ngModel)]="employeeData.name" 
+               name="name" 
+               required
+               minlength="3"
+               #name="ngModel">
+        <div *ngIf="(name.invalid && (name.dirty || name.touched || isFormSubmitted))" class="error-msg">
+          <div *ngIf="name.errors?.['required']">Name is required</div>
+          <div *ngIf="name.errors?.['minlength']">Minimum 3 characters required</div>
+        </div>
+      </div>
+
+      <!-- Profile Image Selection -->
+      <div class="form-group">
+        <label>Profile image</label>
+        <div class="profile-images">
+          <label *ngFor="let image of profileImages">
+            <input type="radio" 
+                   name="profileImage" 
+                   [(ngModel)]="employeeData.imagePath" 
+                   [value]="image" 
+                   required>
+            <img [src]="image" alt="Profile">
+          </label>
+        </div>
+        <div *ngIf="isFormSubmitted && !employeeData.imagePath" class="error-msg">
+          Profile image selection is required
+        </div>
+      </div>
+
+      <!-- Gender Selection -->
+      <div class="form-group">
+        <label>Gender</label>
+        <div class="gender-options">
+          <label>
+            <input type="radio" 
+                   name="gender" 
+                   value="Male" 
+                   [(ngModel)]="employeeData.gender" 
+                   required> Male
+          </label>
+          <label>
+            <input type="radio" 
+                   name="gender" 
+                   value="Female" 
+                   [(ngModel)]="employeeData.gender"> Female
+          </label>
+        </div>
+        <div *ngIf="isFormSubmitted && !employeeData.gender" class="error-msg">
+          Gender selection is required
+        </div>
+      </div>
+
+      <!-- Department Selection -->
+      <div class="form-group">
+        <label>Department</label>
+        <div class="department-options">
+          <label *ngFor="let dept of ['HR', 'Sales', 'Finance', 'Engineer', 'Others']">
+            <input type="checkbox" 
+                   [value]="dept" 
+                   (change)="updateDepartments(dept, $any($event.target).checked)">
+            {{ dept }}
+          </label>
+        </div>
+        <div *ngIf="isFormSubmitted && employeeData.department.length === 0" class="error-msg">
+          At least one department must be selected
+        </div>
+      </div>
+
+      <!-- Salary Selection -->
+      <div class="form-group salary-group">
+        <label>Salary</label>
+        <select [(ngModel)]="employeeData.salary" name="salary" required>
+          <option value="" disabled selected>Select Salary</option>
+          <option *ngFor="let salary of salaryOptions" [ngValue]="salary">
+            ₹ {{ salary | number }}
+          </option>
+        </select>
+        <div *ngIf="isFormSubmitted && !employeeData.salary" class="error-msg">
+          Salary selection is required
+        </div>
+      </div>
+
+      <!-- Start Date Selection -->
+      <div class="form-group date-group">
+        <label>Start Date</label>
+        <div class="date-inputs">
+          <select [(ngModel)]="employeeData.day" name="day" required>
+            <option value="" disabled selected>Day</option>
+            <option *ngFor="let day of days" [value]="day">{{ day }}</option>
+          </select>
+
+          <select [(ngModel)]="employeeData.month" name="month" required>
+            <option value="" disabled selected>Month</option>
+            <option *ngFor="let month of months" [value]="month">{{ month }}</option>
+          </select>
+
+          <select [(ngModel)]="employeeData.year" name="year" required>
+            <option value="" disabled selected>Year</option>
+            <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+          </select>
+        </div>
+        <div *ngIf="isFormSubmitted && (!employeeData.day || !employeeData.month || !employeeData.year)" 
+             class="error-msg">
+          Complete date selection is required
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea [(ngModel)]="employeeData.notes" name="notes"></textarea>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="button-group">
+        <button type="button" class="cancel" (click)="navigateToHome()">Cancel</button>
+        <button type="submit" [disabled]="employeeForm.invalid">
+          {{ employeeId ? 'Update' : 'Submit' }}
+        </button>
+        <button type="reset">Reset</button>
+      </div>
+    </form>
+  </div>
+</div>
